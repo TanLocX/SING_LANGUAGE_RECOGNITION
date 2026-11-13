@@ -1,0 +1,43 @@
+# ==========================================
+# 1. Bytecode & Cache của Python
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# ==========================================
+# 2. Môi trường ảo & Cấu hình IDE cá nhân
+# ==========================================
+venv/
+.venv/
+env/
+.env
+.vscode/
+.idea/
+*.swp
+
+# ==========================================
+# 3. Tài liệu & Repository tham khảo cá nhân
+# ==========================================
+REPO/
+
+# ==========================================
+# 4. Video kiểm thử & Thư mục tạm cá nhân
+# ==========================================
+raw_videos/
+recordings/
+
+# ==========================================
+# 5. Dữ liệu video thô của module cử chỉ tĩnh
+# (Đã lưu trữ trọn vẹn trong file dataset.npz ~0.17 MB)
+# ==========================================
+static_gesture_module/dataset_static/
+static_gesture_module/__pycache__/
+
+# ==========================================
+# 6. Giữ lại cấu trúc thư mục rỗng
+# ==========================================
+!data/.gitkeep
+!dataset_npy/.gitkeep
