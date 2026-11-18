@@ -21,9 +21,9 @@ import numpy as np
 import onnxruntime as ort
 import mediapipe as mp
 
-# Đảm bảo import được module helper trong models/onnx
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODELS_ONNX_DIR = os.path.join(BASE_DIR, "models", "onnx")
+# Đảm bảo import được module helper trong DATA/models/onnx
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+MODELS_ONNX_DIR = os.path.join(ROOT_DIR, "DATA", "models", "onnx")
 if MODELS_ONNX_DIR not in sys.path:
     sys.path.insert(0, MODELS_ONNX_DIR)
 

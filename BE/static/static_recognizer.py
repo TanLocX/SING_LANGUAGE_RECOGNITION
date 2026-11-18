@@ -89,48 +89,58 @@ class StaticGestureRecognizer:
     Bộ nhận diện chuyên biệt dành riêng cho Cử chỉ Tĩnh (Chữ cái A, B, C, D... và số tĩnh).
     """
     def __init__(self, dataset_dir: str = None):
-        self.dataset_dir = dataset_dir or os.path.join(os.path.dirname(__file__), "dataset_static")
+        root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        default_dir = os.path.join(root_dir, "DATA", "static", "dataset_static")
+        self.dataset_dir = dataset_dir or (default_dir if os.path.isdir(default_dir) else os.path.join(os.path.dirname(__file__), "dataset_static"))
         self.static_templates: Dict[str, List[np.ndarray]] = {}
-        if os.path.isdir(self.dataset_dir):
-            self.load_dataset(self.dataset_dir)
+        self.load_dataset(self.dataset_dir)
 
     def load_dataset(self, dataset_dir: str):
-        """Nạp toàn bộ mẫu tĩnh từ thư mục dataset_static."""
+        """Nạp toàn bộ mẫu tĩnh từ thư mục dataset_static và dataset.npz."""
         self.static_templates = {}
-        for root, dirs, files in os.walk(dataset_dir):
-            for f in files:
-                if f.endswith(".npy"):
-                    full_path = os.path.join(root, f)
-                    label = os.path.basename(root)
-                    if label == os.path.basename(dataset_dir):
-                        label = f.split("_")[0]
-                    try:
-                        arr = np.load(full_path)
-                        if arr.ndim == 2 and arr.shape[1] == 1662:
-                            h_shape = extract_hand_shape_from_sequence(arr)
-                            if h_shape is not None:
-                                self.static_templates.setdefault(label, []).append(h_shape)
-                        elif arr.ndim == 2 and arr.shape == (21, 3):
-                            norm_h = align_hand_landmarks(arr)
-                            self.static_templates.setdefault(label, []).append(norm_h)
-                    except Exception as e:
-                        print(f"[Static Loader Warning]: Lỗi đọc {full_path}: {e}")
+        if os.path.isdir(dataset_dir):
+            for root, dirs, files in os.walk(dataset_dir):
+                for f in files:
+                    if f.endswith(".npy"):
+                        full_path = os.path.join(root, f)
+                        label = os.path.basename(root)
+                        if label == os.path.basename(dataset_dir):
+                            label = f.split("_")[0]
+                        try:
+                            arr = np.load(full_path)
+                            if arr.ndim == 2 and arr.shape[1] == 1662:
+                                h_shape = extract_hand_shape_from_sequence(arr)
+                                if h_shape is not None:
+                                    self.static_templates.setdefault(label, []).append(h_shape)
+                            elif arr.ndim == 2 and arr.shape == (21, 3):
+                                norm_h = align_hand_landmarks(arr)
+                                self.static_templates.setdefault(label, []).append(norm_h)
+                        except Exception as e:
+                            print(f"[Static Loader Warning]: Lỗi đọc {full_path}: {e}")
 
-        # Nạp npz nếu có
-        npz_file = os.path.join(os.path.dirname(__file__), "dataset.npz")
-        if os.path.isfile(npz_file):
-            try:
-                npz_data = np.load(npz_file, allow_pickle=True)
-                if 'X' in npz_data and 'labels' in npz_data:
-                    X_arr = npz_data['X']
-                    labels_arr = npz_data['labels']
-                    for idx, x_sample in enumerate(X_arr):
-                        lbl = str(labels_arr[idx]).strip()
-                        h_shape = extract_hand_shape_from_sequence(x_sample)
-                        if h_shape is not None:
-                            self.static_templates.setdefault(lbl, []).append(h_shape)
-            except Exception as e:
-                print(f"[Static Loader Warning]: Lỗi đọc dataset.npz: {e}")
+        # Nạp dataset.npz nếu có (ưu tiên tìm trong DATA/static/dataset.npz)
+        root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        npz_candidates = [
+            os.path.join(root_dir, "DATA", "static", "dataset.npz"),
+            os.path.join(os.path.dirname(__file__), "dataset.npz"),
+            "DATA/static/dataset.npz",
+            "dataset.npz"
+        ]
+        for npz_file in npz_candidates:
+            if os.path.isfile(npz_file):
+                try:
+                    npz_data = np.load(npz_file, allow_pickle=True)
+                    if 'X' in npz_data and 'labels' in npz_data:
+                        X_arr = npz_data['X']
+                        labels_arr = npz_data['labels']
+                        for idx, x_sample in enumerate(X_arr):
+                            lbl = str(labels_arr[idx]).strip()
+                            h_shape = extract_hand_shape_from_sequence(x_sample)
+                            if h_shape is not None:
+                                self.static_templates.setdefault(lbl, []).append(h_shape)
+                        break
+                except Exception as e:
+                    print(f"[Static Loader Warning]: Lỗi đọc dataset.npz ({npz_file}): {e}")
 
         print(f"[StaticGestureRecognizer]: Đã nạp thành công {len(self.static_templates)} nhãn tĩnh: {list(self.static_templates.keys())}")
 

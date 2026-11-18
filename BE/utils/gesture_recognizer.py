@@ -22,8 +22,8 @@ import numpy as np
 from datetime import datetime
 from typing import List, Dict, Tuple, Optional
 
-from .dynamic_recognizer import DynamicGestureRecognizer, resample_sequence, fast_dtw_distance, normalize_dynamic_sequence
-from .motion_spotter import KinematicMotionSpotter, MotionState
+from ..dynamic.dynamic_recognizer import DynamicGestureRecognizer, resample_sequence, fast_dtw_distance, normalize_dynamic_sequence
+from ..dynamic.motion_spotter import KinematicMotionSpotter, MotionState
 
 # Kích thước vector đặc trưng mỗi frame
 KEYPOINT_DIM = 1662
@@ -229,7 +229,7 @@ class GestureDatasetManager:
     def __init__(self, dataset_dirs=None):
         if isinstance(dataset_dirs, str):
             dataset_dirs = [dataset_dirs]
-        self.dataset_dirs = dataset_dirs or ["dataset", "dataset_npy", "recordings"]
+        self.dataset_dirs = dataset_dirs or ["DATA/dynamic", "dataset", "dataset_npy", "recordings"]
         for d in self.dataset_dirs:
             os.makedirs(d, exist_ok=True)
         self._cached_templates = None
@@ -475,7 +475,7 @@ class VideoRecognizer:
                 mirror=False
             )
 
-            from .holistic_tracker import extract_keypoints
+            from ..trackers.holistic_tracker import extract_keypoints
             kp = extract_keypoints(results)
             keypoints_list.append(kp)
             # Lưu trữ khung hình SẠCH (clean frames) không có khung xương vẽ đè
@@ -509,7 +509,7 @@ class VideoRecognizer:
            - Tự động đóng gói chuỗi khi cử chỉ kết thúc (COMPLETED) và chấm điểm ngay lập tức.
         2. Kết hợp Sliding Window DTW dự phòng.
         """
-        from .holistic_tracker import extract_keypoints
+        from ..trackers.holistic_tracker import extract_keypoints
         vec_1662 = extract_keypoints(results)
 
         # 1. Kinematic Motion Spotter: Bắt chính xác chuỗi cử chỉ trọn vẹn

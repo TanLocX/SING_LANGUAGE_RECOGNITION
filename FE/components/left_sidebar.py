@@ -61,11 +61,11 @@ class LeftSidebarFrame(ctk.CTkScrollableFrame):
         lbl_src.pack(anchor="w", padx=10, pady=(8, 2))
 
         self.seg_data_source = ctk.CTkSegmentedButton(
-            db_box, values=["dataset", "recordings", "Cả hai"],
+            db_box, values=["DATA", "Recordings", "Cả hai"],
             command=self.callbacks.get("on_data_source_change"),
             font=("Segoe UI", 11, "bold"), height=30, selected_color="#0284C7"
         )
-        self.seg_data_source.set("dataset")
+        self.seg_data_source.set("DATA")
         self.seg_data_source.pack(fill="x", padx=10, pady=(0, 6))
 
         self.lbl_gesture_stats = ctk.CTkLabel(

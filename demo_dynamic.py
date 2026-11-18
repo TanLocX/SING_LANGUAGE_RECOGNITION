@@ -35,7 +35,7 @@ def main():
     print("=" * 60)
 
     # 1. Nạp CSDL cử chỉ động
-    dm = GestureDatasetManager(dataset_dirs=["dataset"])
+    dm = GestureDatasetManager(dataset_dirs=["DATA/dynamic", "dataset"])
     dm.load_all_templates()
     dynamic_templates = dm.dynamic_templates
 

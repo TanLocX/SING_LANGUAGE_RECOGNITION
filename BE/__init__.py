@@ -1,18 +1,25 @@
 """
-Backend package for Sign Language Recognition System (Chuyên biệt Cử chỉ Động)
+Backend Package for Sign Language Recognition System (BE Layer)
+Organized into:
+  - BE.trackers: HolisticTracker, OnnxTracker, CameraManager
+  - BE.dynamic: DynamicGestureRecognizer, KinematicMotionSpotter, MotionState, FastDTW
+  - BE.static: StaticGestureRecognizer
+  - BE.utils: GestureDatasetManager, VideoRecognizer, TTSManager
 """
-from .holistic_tracker import HolisticTracker, extract_keypoints, draw_keypoints_vector
-from .onnx_tracker import OnnxTracker
-from .camera_stream import CameraManager
-from .tts_manager import TTSManager
-from .motion_spotter import KinematicMotionSpotter, MotionState
-from .dynamic_recognizer import (
+
+from .trackers.holistic_tracker import HolisticTracker, extract_keypoints, draw_keypoints_vector
+from .trackers.onnx_tracker import OnnxTracker
+from .trackers.camera_stream import CameraManager
+from .utils.tts_manager import TTSManager
+from .dynamic.motion_spotter import KinematicMotionSpotter, MotionState
+from .dynamic.dynamic_recognizer import (
     DynamicGestureRecognizer,
     fast_dtw_distance,
     resample_sequence,
     normalize_dynamic_sequence,
 )
-from .gesture_recognizer import (
+from .static.static_recognizer import StaticGestureRecognizer
+from .utils.gesture_recognizer import (
     GestureDatasetManager,
     VideoRecognizer,
     normalize_hand_landmarks,
@@ -33,6 +40,7 @@ __all__ = [
     "KinematicMotionSpotter",
     "MotionState",
     "DynamicGestureRecognizer",
+    "StaticGestureRecognizer",
     "GestureDatasetManager",
     "VideoRecognizer",
     "align_hand_landmarks",

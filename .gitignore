@@ -28,16 +28,18 @@ REPO/
 # ==========================================
 raw_videos/
 recordings/
+DATA/recordings/
 
 # ==========================================
 # 5. Dữ liệu video thô của module cử chỉ tĩnh
-# (Đã lưu trữ trọn vẹn trong file dataset.npz ~0.17 MB)
+# (Đã lưu trữ trọn vẹn trong file DATA/static/dataset.npz ~0.17 MB)
 # ==========================================
-static_gesture_module/dataset_static/
-static_gesture_module/__pycache__/
+DATA/static/dataset_static/
+static_gesture_module/
 
 # ==========================================
 # 6. Giữ lại cấu trúc thư mục rỗng
 # ==========================================
 !data/.gitkeep
-!dataset_npy/.gitkeep
+!DATA/.gitkeep
+!DATA/dynamic/.gitkeep

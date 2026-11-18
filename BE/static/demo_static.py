@@ -8,7 +8,10 @@ Chạy thử nghiệm độc lập bộ nhận diện cử chỉ tĩnh:
 
 import cv2
 import numpy as np
-from static_recognizer import StaticGestureRecognizer, align_hand_landmarks
+try:
+    from .static_recognizer import StaticGestureRecognizer, align_hand_landmarks
+except ImportError:
+    from BE import StaticGestureRecognizer, align_hand_landmarks
 
 try:
     import mediapipe as mp

@@ -216,19 +216,20 @@ class DynamicGestureRecognizer:
         # Tự động nạp các Custom Kinematic Rules riêng biệt từ thư mục dataset/
         self.custom_rules: Dict[str, any] = self._load_custom_rules()
 
-    def _load_custom_rules(self, dataset_base_dir: str = "dataset") -> Dict[str, any]:
+    def _load_custom_rules(self, dataset_base_dir: str = "DATA/dynamic") -> Dict[str, any]:
         """
         Tự động phát hiện và nạp các file `gesture_rule.py` nằm riêng biệt
-        trong từng thư mục con của `dataset/<tên_cử_chỉ>/gesture_rule.py`.
+        trong từng thư mục con của `DATA/dynamic/<tên_cử_chỉ>/gesture_rule.py`.
         """
         import os
         import importlib.util
         rules = {}
-        if not os.path.isdir(dataset_base_dir):
+        target_dir = dataset_base_dir if os.path.isdir(dataset_base_dir) else "dataset"
+        if not os.path.isdir(target_dir):
             return rules
 
-        for item in os.listdir(dataset_base_dir):
-            folder_path = os.path.join(dataset_base_dir, item)
+        for item in os.listdir(target_dir):
+            folder_path = os.path.join(target_dir, item)
             rule_file = os.path.join(folder_path, "gesture_rule.py")
             if os.path.isdir(folder_path) and os.path.isfile(rule_file):
                 try:

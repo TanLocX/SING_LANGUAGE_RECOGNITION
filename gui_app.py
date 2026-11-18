@@ -28,8 +28,15 @@ from BE import (
     GestureDatasetManager,
     VideoRecognizer,
 )
-from FE import TopBarFrame, LeftSidebarFrame, VideoCanvasFrame, RightPanelFrame
-from controllers import LiveWebcamMixin, VideoPlayerMixin, GestureActionMixin
+from FE import (
+    TopBarFrame,
+    LeftSidebarFrame,
+    VideoCanvasFrame,
+    RightPanelFrame,
+    LiveWebcamMixin,
+    VideoPlayerMixin,
+    GestureActionMixin,
+)
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
