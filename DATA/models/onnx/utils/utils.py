@@ -397,8 +397,11 @@ def keep_aspect_resize_and_pad(
         (resize_height, resize_width, 3),
         np.uint8
     )
-    ash = resize_height / image_height
-    asw = resize_width / image_width
+    if image_height <= 0 or image_width <= 0:
+        return padded_image, np.zeros((1, 1, 3), dtype=np.uint8)
+
+    ash = resize_height / max(1, image_height)
+    asw = resize_width / max(1, image_width)
     if asw < ash:
         sizeas = (int(image_width * asw), int(image_height * asw))
     else:

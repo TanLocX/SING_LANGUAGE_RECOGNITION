@@ -171,9 +171,11 @@ class HandLandmark(object):
                 resize_height=input_h,
             )
             # reduction_ratio_h = resized_h / original_h
-            resize_224x224_scale_h = resized_image.shape[0] / image.shape[0]
+            orig_h = max(1, image.shape[0])
+            orig_w = max(1, image.shape[1])
+            resize_224x224_scale_h = max(1e-4, resized_image.shape[0] / orig_h)
             # reduction_ratio_w = resized_w / original_w
-            resize_224x224_scale_w = resized_image.shape[1] / image.shape[1]
+            resize_224x224_scale_w = max(1e-4, resized_image.shape[1] / orig_w)
             resize_scales_224x224.append(
                 [
                     resize_224x224_scale_w,
@@ -287,15 +289,17 @@ class HandLandmark(object):
             angle = rect[4]
 
             view_image = copy.deepcopy(resized_image)
+            scale_x = max(1e-4, float(resize_scale_224x224[0]))
+            scale_y = max(1e-4, float(resize_scale_224x224[1]))
             view_image = cv2.resize(
                 view_image,
                 dsize=None,
-                fx=1/resize_scale_224x224[0],
-                fy=1/resize_scale_224x224[1],
+                fx=1/scale_x,
+                fy=1/scale_y,
             )
             rescaled_xy = np.asarray([[v[0], v[1]] for v in zip(rrn_lms[0::3], rrn_lms[1::3])], dtype=np.float32)
-            rescaled_xy[:, 0] = (rescaled_xy[:, 0] * input_w - half_pad_size_224x224[0]) / resize_scale_224x224[0]
-            rescaled_xy[:, 1] = (rescaled_xy[:, 1] * input_h - half_pad_size_224x224[1]) / resize_scale_224x224[1]
+            rescaled_xy[:, 0] = (rescaled_xy[:, 0] * input_w - half_pad_size_224x224[0]) / scale_x
+            rescaled_xy[:, 1] = (rescaled_xy[:, 1] * input_h - half_pad_size_224x224[1]) / scale_y
             rescaled_xy = rescaled_xy.astype(np.int32)
 
             height, width = view_image.shape[:2]

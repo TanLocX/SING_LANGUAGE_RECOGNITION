@@ -175,18 +175,30 @@ class OnnxTracker:
                 sqn_rr_size, rotation, sqn_rr_center_x, sqn_rr_center_y = hand
                 cx = int(sqn_rr_center_x * w)
                 cy = int(sqn_rr_center_y * h)
-                xmin = max(0, int((sqn_rr_center_x - (sqn_rr_size / 2)) * w))
-                xmax = min(w, int((sqn_rr_center_x + (sqn_rr_size / 2)) * w))
-                ymin = max(0, int((sqn_rr_center_y - (sqn_rr_size * wh_ratio / 2)) * h))
-                ymax = min(h, int((sqn_rr_center_y + (sqn_rr_size * wh_ratio / 2)) * h))
+                # Kích thước khung bàn tay tối thiểu 16x16 pixels tránh vỡ hình/chia cho 0
+                box_w = max(16, int(sqn_rr_size * w))
+                box_h = max(16, int(sqn_rr_size * wh_ratio * h))
                 degree = degrees(rotation)
-                rects.append([cx, cy, (xmax - xmin), (ymax - ymin), degree])
+                rects.append([cx, cy, box_w, box_h, degree])
 
             rects = np.asarray(rects, dtype=np.float32)
 
             # Crop và chạy Hand Landmark Regression trên GPU
             cropped = rotate_and_crop_rectangle(raw_bgr_frame, rects, "padding")
-            landmarks_list, sides_info = self.hand_estimator(cropped, rects)
+            
+            # Lọc bỏ các crop rỗng trước khi đưa vào mạng ONNX
+            valid_cropped = []
+            valid_rects = []
+            for crp, r in zip(cropped, rects):
+                if crp is not None and crp.shape[0] >= 10 and crp.shape[1] >= 10:
+                    valid_cropped.append(crp)
+                    valid_rects.append(r)
+
+            if len(valid_cropped) > 0:
+                valid_rects = np.asarray(valid_rects, dtype=np.float32)
+                landmarks_list, sides_info = self.hand_estimator(valid_cropped, valid_rects)
+            else:
+                landmarks_list, sides_info = [], []
 
             candidates = []
             for lm_21, side_info in zip(landmarks_list, sides_info):
